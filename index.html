@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>فرم پذیرش - شهر لپ‌تاپ</title>
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  body { font-family: "Vazirmatn", sans-serif; max-width: 70mm; margin: 0 auto; background: #fff; direction: rtl; padding: 5px; }
+  header { text-align: center; padding-bottom: 5px; margin-bottom: 5px; }
+  header img { width: 150px; margin-bottom: 8px; }
+  .header-info { margin-bottom: 8px; }
+  .header-info div { margin: 3px 0; font-weight: 700; }
+  .website { font-size: 12px; }
+  .phones { font-size: 11px; }
+  .header-title { font-size: 22px; font-weight: 700; margin: 8px 0; border-top: 3px solid #000; padding-top: 5px; }
+  table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+  th, td { border: 2px solid #000; padding: 5px; font-size: 11px; }
+  th { background-color: #f2f2f2; width: 30%; font-weight: 700; }
+  input, select, textarea { width: 100%; border: none; background: transparent; font-family: "Vazirmatn", sans-serif; font-size: 11px; resize: none; }
+  .delivery-input { width: 50px; text-align: center; border: 1px solid #000; padding: 2px; margin-left: 5px; }
+  .section-title { font-weight: bold; border-bottom: 1px solid #000; margin-top: 8px; padding-bottom: 2px; font-size: 12px; font-weight: 700; }
+  .checkbox-group { font-size: 11px; margin-top: 5px; line-height: 1.3; display: flex; flex-wrap: wrap; gap: 3px; }
+  .checkbox-group label { display: flex; align-items: center; width: 48%; margin-bottom: 2px; font-weight: 400; }
+  .checkbox-group input { width: auto; margin-left: 5px; }
+  .submit-btn { display: block; width: 100%; margin-top: 10px; background-color: #000; color: #fff; border: none; padding: 8px; font-size: 14px; cursor: pointer; font-family: "Vazirmatn", sans-serif; font-weight: 700; }
+  .edit-btn { display: block; width: 100%; margin-top: 5px; background-color: #666; color: #fff; border: none; padding: 6px; font-size: 12px; cursor: pointer; font-family: "Vazirmatn", sans-serif; font-weight: 700; }
+  .delete-btn { display: block; width: 100%; margin-top: 5px; background-color: #e74c3c; color: #fff; border: none; padding: 6px; font-size: 12px; cursor: pointer; font-family: "Vazirmatn", sans-serif; font-weight: 700; }
+  .notice { text-align: center; font-size: 10px; margin: 8px 0; color: #000; line-height: 1.4; font-weight: 700; }
+  footer { text-align: center; font-size: 13px; margin-top: 5px; padding-top: 8px; font-weight: 700; }
+  #controllerSection, #consoleTypeSection, #softwareSection { display: none; }
+  .history { margin-top: 15px; border-top: 2px solid #000; padding-top: 10px; }
+  .history-item { padding: 5px; border-bottom: 1px solid #ddd; cursor: pointer; font-size: 11px; position: relative; }
+  .history-item:hover { background: #f5f5f5; }
+  .delete-history { position: absolute; left: 5px; top: 5px; background: #e74c3c; color: white; border: none; border-radius: 3px; padding: 2px 5px; font-size: 10px; cursor: pointer; }
+  .signature { margin-top: 10px; text-align: center; font-size: 10px; }
+  .invoice-total { font-weight: bold; border-top: 2px solid #000; margin-top: 5px; padding-top: 5px; font-size: 12px; }
+  .software-list { font-size: 10px; margin-top: 5px; padding: 3px; border: 1px dashed #000; }
+  #printable { display: none; }
+  .invoice-checkbox { display: flex; align-items: center; gap: 5px; margin-top: 5px; }
+  .invoice-checkbox input { width: auto; }
+  .custom-software { margin-top: 5px; }
+  .custom-software-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    font-size: 11px;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #f9f9f9;
+  }
+  .custom-software-item input[type="checkbox"] {
+    margin: 0;
+    width: auto;
+  }
+  .custom-software-item input[type="number"] {
+    width: 40px;
+    text-align: center;
+    border: 1px solid #999;
+    border-radius: 3px;
+    padding: 2px;
+  }
+  .custom-software-item label {
+    flex: 1;
+    margin: 0;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  @media print {
+    body * { visibility: hidden; }
+    #printable, #printable * { visibility: visible; }
+    #printable { position: absolute; left: 0; top: 0; width: 70mm; padding: 5px; }
+    .no-print { display: none !important; }
+  }
+</style>
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="Logo">
+    <div class="header-info">
+      <div class="website">www.shahrelaptop.ir | @laptopcity.shop</div>
+      <div class="phones">02333342004 | 09303342004</div>
+    </div>
+    <div class="header-title">فرم پذیرش</div>
+  </header>
+
+  <form id="acceptForm">
+    <table>
+      <tr><th>نام مشتری</th><td><input type="text" id="customerName" required list="customerHistory"></td></tr>
+      <tr><th>شماره تماس</th><td><input type="tel" id="customerPhone" required list="phoneHistory"></td></tr>
+      <tr><th>نوع دستگاه</th>
+        <td>
+          <select id="deviceType">
+            <option value="laptop">لپ‌تاپ</option>
+            <option value="pc">کیس کامپیوتر</option>
+            <option value="console">کنسول بازی</option>
+            <option value="controller">دسته کنسول</option>
+            <option value="other">سایر</option>
+          </select>
+        </td>
+      </tr>
+      <tr id="problemRow"><th>توضیحات</th><td><textarea id="problemText" rows="2" placeholder="نصب نرم‌افزار، تعمیرات، یا سایر موارد"></textarea></td></tr>
+      <tr><th>بیعانه</th><td><input type="number" id="deposit" min="0"></td></tr>
+      <tr><th>تاریخ تحویل (روز)</th>
+        <td>
+          <input type="number" id="deliveryDays" class="delivery-input" min="1" max="30" value="1">
+          <span style="font-size: 10px;">روز کاری</span>
+        </td>
+      </tr>
+    </table>
+
+    <datalist id="customerHistory"></datalist>
+    <datalist id="phoneHistory"></datalist>
+
+    <div id="consoleTypeSection">
+      <div class="section-title">نوع کنسول:</div>
+      <div class="checkbox-group">
+        <label><input type="radio" name="consoleType" value="ps" checked> پلی‌استیشن (PS)</label>
+        <label><input type="radio" name="consoleType" value="xbox"> ایکس‌باکس (Xbox)</label>
+      </div>
+    </div>
+
+    <div id="controllerSection">
+      <div class="section-title">مشکلات دسته کنسول:</div>
+      <div class="checkbox-group" id="psButtons">
+        <label><input type="checkbox" value="R1"> R1</label>
+        <label><input type="checkbox" value="R2"> R2</label>
+        <label><input type="checkbox" value="L1"> L1</label>
+        <label><input type="checkbox" value="L2"> L2</label>
+        <label><input type="checkbox" value="دکمه جهت"> دکمه جهت</label>
+        <label><input type="checkbox" value="دکمه اکشن"> دکمه اکشن</label>
+        <label><input type="checkbox" value="OPTIONS"> OPTIONS</label>
+        <label><input type="checkbox" value="SHARE"> SHARE</label>
+        <label><input type="checkbox" value="PS"> PS</label>
+        <label><input type="checkbox" value="TOUCH"> TOUCH</label>
+        <label><input type="checkbox" value="سوکت شارژ"> سوکت شارژ</label>
+        <label><input type="checkbox" value="باتری"> باتری</label>
+        <label><input type="checkbox" value="آنالوگ راست"> آنالوگ راست</label>
+        <label><input type="checkbox" value="آنالوگ چپ"> آنالوگ چپ</label>
+        <label><input type="checkbox" value="سر آنالوگ راست"> سر آنالوگ راست</label>
+        <label><input type="checkbox" value="سر آنالوگ چپ"> سر آنالوگ چپ</label>
+      </div>
+      <div class="checkbox-group" id="xboxButtons" style="display:none">
+        <label><input type="checkbox" value="RB"> RB</label>
+        <label><input type="checkbox" value="RT"> RT</label>
+        <label><input type="checkbox" value="LB"> LB</label>
+        <label><input type="checkbox" value="LT"> LT</label>
+        <label><input type="checkbox" value="دکمه جهت"> دکمه جهت</label>
+        <label><input type="checkbox" value="دکمه اکشن"> دکمه اکشن</label>
+        <label><input type="checkbox" value="VIEW"> VIEW</label>
+        <label><input type="checkbox" value="MENU"> MENU</label>
+        <label><input type="checkbox" value="Xbox"> Xbox</label>
+        <label><input type="checkbox" value="سوکت شارژ"> سوکت شارژ</label>
+        <label><input type="checkbox" value="باتری"> باتری</label>
+        <label><input type="checkbox" value="آنالوگ راست"> آنالوگ راست</label>
+        <label><input type="checkbox" value="آنالوگ چپ"> آنالوگ چپ</label>
+        <label><input type="checkbox" value="سر آنالوگ راست"> سر آنالوگ راست</label>
+        <label><input type="checkbox" value="سر آنالوگ چپ"> سر آنالوگ چپ</label>
+      </div>
+      <div style="margin-top: 5px;">
+        <textarea id="controllerExtra" placeholder="توضیح اضافی (اختیاری)" rows="1" style="width: 100%; font-size: 10px; padding: 2px;"></textarea>
+      </div>
+    </div>
+
+    <div id="softwareSection">
+      <div class="section-title">نرم‌افزارهای مورد نیاز:</div>
+      <div class="checkbox-group">
+        <label><input type="checkbox" data-price="700000" value="نصب ویندوز و درایورها و پک نرم افزارهای کاربردی"> ویندوز+درایورها و پک نرم‌افزار (700,000)</label>
+        <label><input type="checkbox" data-price="100000" value="Photoshop"> Photoshop (100,000)</label>
+        <label><input type="checkbox" data-price="200000" value="Coreldraw"> Coreldraw (200,000)</label>
+        <label><input type="checkbox" data-price="100000" value="Insulator"> Insulator (100,000)</label>
+        <label><input type="checkbox" data-price="200000" value="3dmax"> 3dmax (200,000)</label>
+        <label><input type="checkbox" data-price="200000" value="AutoCAD"> AutoCAD (200,000)</label>
+        <label><input type="checkbox" data-price="200000" value="V-ray"> V-ray (200,000)</label>
+        <label><input type="checkbox" data-price="200000" value="Crona"> Corona (200,000)</label>
+        <label><input type="checkbox" data-price="200000" value="Sketchup"> Sketchup (200,000)</label>
+      </div>
+
+      <div class="custom-software">
+        <div class="section-title">نصب نرم افزارهای تخصصی:</div>
+        <div class="custom-software-item">
+          <input type="checkbox" id="customService1" data-price="100000">
+          <label for="customService1">نرم افزار تخصصی (هر عدد 100,000 تومان)</label>
+          <input type="number" id="customService1Count" class="delivery-input" min="1" max="10" value="1" disabled>
+        </div>
+        <div class="custom-software-item">
+          <input type="checkbox" id="customService2" data-price="200000">
+          <label for="customService2">نرم افزار تخصصی (هر عدد 200,000 تومان)</label>
+          <input type="number" id="customService2Count" class="delivery-input" min="1" max="10" value="1" disabled>
+        </div>
+      </div>
+
+      <div style="margin-top: 5px;">
+        <div class="invoice-checkbox">
+          <input type="checkbox" id="generateInvoice">
+          <label for="generateInvoice" style="margin: 0;">صادر کردن فاکتور</label>
+        </div>
+        <div id="invoiceTotal" style="font-weight: bold; margin-top: 5px; font-size: 13px; display: none;">جمع فاکتور: 0 تومان</div>
+      </div>
+    </div>
+
+    <div class="notice">
+      <div>هنگام تحویل کالا همراه داشتن فرم پذیرش الزامیست</div>
+      <div>تاریخ تحویل تقریبی است و ممکن است تغییر کند</div>
+    </div>
+
+    <button type="button" class="submit-btn no-print" id="savePrintBtn">ثبت و چاپ فرم</button>
+    <button type="button" class="edit-btn no-print" id="editReceiptBtn" style="display:none">ویرایش این پذیرش</button>
+    <button type="button" class="delete-btn no-print" id="deleteReceiptBtn" style="display:none">حذف این پذیرش</button>
+  </form>
+
+  <div class="history no-print">
+    <div class="section-title">آخرین پذیرش‌ها (۲۰ مورد آخر)</div>
+    <div id="historyList"></div>
+  </div>
+
+  <footer class="no-print">
+    <p>از اعتماد شما سپاسگزاریم</p>
+  </footer>
+
+  <div id="printable"></div>
+
+<script>
+// شمارنده فیش - فقط از localStorage استفاده می‌کنه
+function getReceiptCounter() {
+    return parseInt(localStorage.getItem('receiptCounter') || '1000');
+}
+
+function setReceiptCounter(counter) {
+    localStorage.setItem('receiptCounter', counter.toString());
+}
+
+function loadHistory() {
+    return JSON.parse(localStorage.getItem('acceptanceHistory') || '[]');
+}
+
+function saveHistory(history) {
+    localStorage.setItem('acceptanceHistory', JSON.stringify(history));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  const deviceType = document.getElementById('deviceType');
+  const consoleTypeSection = document.getElementById('consoleTypeSection');
+  const controllerSection = document.getElementById('controllerSection');
+  const softwareSection = document.getElementById('softwareSection');
+  const problemRow = document.getElementById('problemRow');
+  const savePrintBtn = document.getElementById('savePrintBtn');
+  const editReceiptBtn = document.getElementById('editReceiptBtn');
+  const deleteReceiptBtn = document.getElementById('deleteReceiptBtn');
+  const historyList = document.getElementById('historyList');
+  const printable = document.getElementById('printable');
+  const generateInvoice = document.getElementById('generateInvoice');
+  const invoiceTotal = document.getElementById('invoiceTotal');
+  const customerHistory = document.getElementById('customerHistory');
+  const phoneHistory = document.getElementById('phoneHistory');
+  const customService1 = document.getElementById('customService1');
+  const customService2 = document.getElementById('customService2');
+  const customService1Count = document.getElementById('customService1Count');
+  const customService2Count = document.getElementById('customService2Count');
+  
+  let currentEditingReceipt = null;
+  let currentReceiptNumber = null;
+  let selectedSoftware = [];
+  
+  function updateCustomerHistory() {
+    const history = loadHistory();
+    const customers = [...new Set(history.map(item => item.name))];
+    const phones = [...new Set(history.map(item => item.phone))];
+    
+    customerHistory.innerHTML = customers.map(name => `<option value="${name}">`).join('');
+    phoneHistory.innerHTML = phones.map(phone => `<option value="${phone}">`).join('');
+  }
+  
+  function renderHistory() {
+    const history = loadHistory();
+    if (history.length === 0) {
+      historyList.innerHTML = '<div style="text-align:center; padding:10px; color:#666;">هیچ پذیرشی ثبت نشده</div>';
+      return;
+    }
+    
+    const last20 = history.slice(-20).reverse();
+    historyList.innerHTML = last20.map(item => `
+      <div class="history-item" onclick="loadReceiptForEdit('${item.receiptNumber}')">
+        <button class="delete-history" onclick="event.stopPropagation(); deleteReceipt('${item.receiptNumber}')">×</button>
+        <strong>${item.receiptNumber}</strong> - ${item.name} - ${item.device} - ${item.date.split(' ')[0]}
+      </div>
+    `).join('');
+  }
+  
+  function updateDeviceView() {
+    const isController = deviceType.value === 'controller';
+    const isComputer = deviceType.value === 'laptop' || deviceType.value === 'pc';
+    const isConsole = deviceType.value === 'console';
+    
+    consoleTypeSection.style.display = isController ? 'block' : 'none';
+    controllerSection.style.display = isController ? 'block' : 'none';
+    softwareSection.style.display = isComputer ? 'block' : 'none';
+    problemRow.style.display = isController ? 'none' : 'table-row';
+    
+    if (isController) {
+      updateConsoleButtons();
+    }
+  }
+  
+  function updateConsoleButtons() {
+    const consoleType = document.querySelector('input[name="consoleType"]:checked').value;
+    document.getElementById('psButtons').style.display = consoleType === 'ps' ? 'flex' : 'none';
+    document.getElementById('xboxButtons').style.display = consoleType === 'xbox' ? 'flex' : 'none';
+  }
+  
+  function calculateInvoiceTotal() {
+    let total = 0;
+    selectedSoftware = [];
+    
+    document.querySelectorAll('#softwareSection input[type="checkbox"]:checked').forEach(checkbox => {
+      if (!checkbox.id.includes('customService')) {
+        const price = parseInt(checkbox.dataset.price) || 0;
+        total += price;
+        selectedSoftware.push(checkbox.value);
+      }
+    });
+    
+    if (customService1.checked) {
+      const count = parseInt(customService1Count.value) || 1;
+      const price = parseInt(customService1.dataset.price) || 0;
+      total += price * count;
+    }
+    
+    if (customService2.checked) {
+      const count = parseInt(customService2Count.value) || 1;
+      const price = parseInt(customService2.dataset.price) || 0;
+      total += price * count;
+    }
+    
+    invoiceTotal.textContent = `جمع فاکتور: ${total.toLocaleString()} تومان`;
+    invoiceTotal.style.display = generateInvoice.checked ? 'block' : 'none';
+    return total;
+  }
+  
+  customService1.addEventListener('change', function() {
+    customService1Count.disabled = !this.checked;
+    calculateInvoiceTotal();
+  });
+  
+  customService2.addEventListener('change', function() {
+    customService2Count.disabled = !this.checked;
+    calculateInvoiceTotal();
+  });
+  
+  customService1Count.addEventListener('change', calculateInvoiceTotal);
+  customService2Count.addEventListener('change', calculateInvoiceTotal);
+  
+  deviceType.addEventListener('change', updateDeviceView);
+  document.querySelectorAll('input[name="consoleType"]').forEach(radio => {
+    radio.addEventListener('change', updateConsoleButtons);
+  });
+  document.querySelectorAll('#softwareSection input[type="checkbox"]').forEach(checkbox => {
+    if (!checkbox.id.includes('customService')) {
+      checkbox.addEventListener('change', calculateInvoiceTotal);
+    }
+  });
+  
+  generateInvoice.addEventListener('change', calculateInvoiceTotal);
+  
+  document.getElementById('customerName').addEventListener('input', function() {
+    const history = loadHistory();
+    const customer = history.find(item => item.name === this.value);
+    if (customer) {
+      document.getElementById('customerPhone').value = customer.phone;
+    }
+  });
+  
+  function calculateDeliveryDate(days) {
+    const today = new Date();
+    const deliveryDate = new Date(today);
+    deliveryDate.setDate(today.getDate() + parseInt(days));
+    return deliveryDate.toLocaleDateString('fa-IR');
+  }
+  
+  function findExistingReceipt(name, phone) {
+    const history = loadHistory();
+    return history.find(item => item.name === name && item.phone === phone);
+  }
+  
+  savePrintBtn.addEventListener('click', function() {
+    const name = document.getElementById('customerName').value.trim();
+    const phone = document.getElementById('customerPhone').value.trim();
+    const device = deviceType.options[deviceType.selectedIndex].text;
+    const deposit = document.getElementById('deposit').value.trim() || '0';
+    const deliveryDays = document.getElementById('deliveryDays').value || '1';
+    const deliveryDate = calculateDeliveryDate(deliveryDays);
+    const shouldGenerateInvoice = generateInvoice.checked;
+    const invoiceAmount = calculateInvoiceTotal();
+    
+    let problem = '';
+    let consoleType = '';
+    
+    if (deviceType.value === 'controller') {
+      consoleType = document.querySelector('input[name="consoleType"]:checked').value;
+      const buttonSection = consoleType === 'ps' ? 'psButtons' : 'xboxButtons';
+      const checks = Array.from(document.querySelectorAll(`#${buttonSection} input[type=checkbox]:checked`))
+        .map(ch => ch.value);
+      const extra = document.getElementById('controllerExtra').value.trim();
+      problem = (checks.length ? checks.join('، ') : '') + 
+                (extra ? (checks.length ? ' - ' : '') + extra : '');
+      problem = `دسته ${consoleType === 'ps' ? 'پلی‌استیشن' : 'ایکس‌باکس'} - ${problem}`;
+    } else {
+      problem = document.getElementById('problemText').value.trim();
+    }
+    
+    if (!name || !phone) {
+      alert('لطفاً نام و شماره تماس را وارد کنید.');
+      return;
+    }
+    
+    if (!problem) {
+      problem = deviceType.value === 'controller' ? '(توضیحی وارد نشده)' : '(نصب نرم‌افزار یا سایر خدمات)';
+    }
+    
+    let receiptCounter = getReceiptCounter();
+    let receiptNumber = currentReceiptNumber;
+    let isNewReceipt = false;
+    
+    const existingReceipt = findExistingReceipt(name, phone);
+    if (!existingReceipt || !currentReceiptNumber) {
+      receiptCounter++;
+      receiptNumber = `R-${receiptCounter.toString().padStart(4, '0')}`;
+      isNewReceipt = true;
+      currentReceiptNumber = receiptNumber;
+      setReceiptCounter(receiptCounter);
+    }
+    
+    const historyItem = {
+      receiptNumber: receiptNumber,
+      name: name,
+      phone: phone,
+      device: device,
+      problem: problem,
+      deposit: deposit,
+      deliveryDays: deliveryDays,
+      deliveryDate: deliveryDate,
+      date: new Date().toLocaleString('fa-IR'),
+      timestamp: new Date().getTime(),
+      invoice: shouldGenerateInvoice,
+      invoiceAmount: invoiceAmount,
+      software: selectedSoftware
+    };
+    
+    const history = loadHistory();
+    
+    if (isNewReceipt) {
+      history.push(historyItem);
+    } else {
+      const index = history.findIndex(item => item.receiptNumber === receiptNumber);
+      if (index !== -1) {
+        history[index] = historyItem;
+      } else {
+        history.push(historyItem);
+      }
+    }
+    
+    saveHistory(history);
+    renderHistory();
+    updateCustomerHistory();
+    
+    printReceipt(historyItem);
+    currentEditingReceipt = historyItem;
+    editReceiptBtn.style.display = 'block';
+    deleteReceiptBtn.style.display = 'block';
+  });
+  
+  function printReceipt(item) {
+    let invoiceSection = '';
+    let softwareSection = '';
+    
+    if (item.software && item.software.length > 0) {
+      softwareSection = `
+        <div class="software-list">
+          <strong>نرم‌افزارهای مورد نیاز:</strong><br>
+          ${item.software.join('، ')}
+        </div>
+      `;
+    }
+    
+    if (item.invoice && item.invoiceAmount > 0) {
+      invoiceSection = `
+        <div class="invoice-total">
+          مبلغ فاکتور: ${item.invoiceAmount.toLocaleString()} تومان
+        </div>
+      `;
+    }
+    
+    let deviceDisplay = item.device;
+    if (item.device === 'دسته کنسول' && item.problem.includes('پلی‌استیشن')) {
+      deviceDisplay = 'دسته کنسول پلی‌استیشن';
+    } else if (item.device === 'دسته کنسول' && item.problem.includes('ایکس‌باکس')) {
+      deviceDisplay = 'دسته کنسول ایکس‌باکس';
+    }
+    
+    printable.innerHTML = `
+      <header>
+        <img src="logo.png" alt="Logo">
+        <div class="header-info">
+          <div class="website">www.shahrelaptop.ir | @laptopcity.shop</div>
+          <div class="phones">02333342004 | 09303342004</div>
+        </div>
+        <div class="header-title">فرم پذیرش</div>
+      </header>
+      
+      <table>
+        <tr><th>شماره پذیرش</th><td>${item.receiptNumber}</td></tr>
+        <tr><th>تاریخ</th><td>${item.date}</td></tr>
+        <tr><th>نام مشتری</th><td>${item.name}</td></tr>
+        <tr><th>شماره تماس</th><td>${item.phone}</td></tr>
+        <tr><th>نوع دستگاه</th><td>${deviceDisplay}</td></tr>
+        <tr><th>توضیحات</th><td>${item.problem}</td></tr>
+        <tr><th>بیعانه</th><td>${item.deposit === '0' ? 'ندارد' : item.deposit + ' تومان'}</td></tr>
+        <tr><th>تاریخ تحویل</th><td>${item.deliveryDate} (${item.deliveryDays} روز کاری)</td></tr>
+      </table>
+
+      ${softwareSection}
+      ${invoiceSection}
+
+      <div class="notice">
+        <div>هنگام تحویل کالا همراه داشتن فرم پذیرش الزامیست</div>
+        <div>تاریخ تحویل تقریبی است و ممکن است تغییر کند</div>
+      </div>
+
+      <div class="signature">
+        <div>جنس مذکور صحیح و سالم تحویل گردید</div>
+        <div style="margin-top: 15px;">امضای مشتری: ________________</div>
+      </div>
+      
+      <footer>
+        <p>از اعتماد شما سپاسگزاریم</p>
+      </footer>
+    `;
+    
+    printable.style.display = 'block';
+    window.print();
+  }
+  
+  editReceiptBtn.addEventListener('click', function() {
+    if (currentEditingReceipt) {
+      document.getElementById('customerName').value = currentEditingReceipt.name;
+      document.getElementById('customerPhone').value = currentEditingReceipt.phone;
+      document.getElementById('deposit').value = currentEditingReceipt.deposit;
+      document.getElementById('deliveryDays').value = currentEditingReceipt.deliveryDays;
+      document.getElementById('problemText').value = currentEditingReceipt.problem.replace(/^دسته (پلی‌استیشن|ایکس‌باکس) - /, '');
+      generateInvoice.checked = currentEditingReceipt.invoice;
+      
+      document.querySelectorAll('#softwareSection input[type="checkbox"]').forEach(checkbox => {
+        if (!checkbox.id.includes('customService')) {
+          checkbox.checked = currentEditingReceipt.software ? currentEditingReceipt.software.includes(checkbox.value) : false;
+        }
+      });
+      
+      if (currentEditingReceipt.device === 'دسته کنسول') {
+        deviceType.value = 'controller';
+        const isPS = currentEditingReceipt.problem.includes('پلی‌استیشن');
+        document.querySelector('input[name="consoleType"][value="' + (isPS ? 'ps' : 'xbox') + '"]').checked = true;
+        updateDeviceView();
+      }
+      
+      currentReceiptNumber = currentEditingReceipt.receiptNumber;
+      calculateInvoiceTotal();
+      window.scrollTo(0, 0);
+    }
+  });
+  
+  deleteReceiptBtn.addEventListener('click', function() {
+    if (currentEditingReceipt && confirm('آیا از حذف این پذیرش مطمئن هستید؟')) {
+      const history = loadHistory();
+      const updatedHistory = history.filter(item => item.receiptNumber !== currentEditingReceipt.receiptNumber);
+      saveHistory(updatedHistory);
+      renderHistory();
+      updateCustomerHistory();
+      
+      document.getElementById('acceptForm').reset();
+      document.getElementById('deliveryDays').value = '1';
+      generateInvoice.checked = false;
+      customService1Count.disabled = true;
+      customService2Count.disabled = true;
+      currentEditingReceipt = null;
+      currentReceiptNumber = null;
+      editReceiptBtn.style.display = 'none';
+      deleteReceiptBtn.style.display = 'none';
+      calculateInvoiceTotal();
+      alert('پذیرش حذف شد.');
+    }
+  });
+  
+  window.loadReceiptForEdit = function(receiptNumber) {
+    const history = loadHistory();
+    const item = history.find(h => h.receiptNumber === receiptNumber);
+    if (item) {
+      currentEditingReceipt = item;
+      editReceiptBtn.click();
+    }
+  };
+  
+  window.deleteReceipt = function(receiptNumber) {
+    if (confirm('آیا از حذف این پذیرش مطمئن هستید؟')) {
+      const history = loadHistory();
+      const updatedHistory = history.filter(item => item.receiptNumber !== receiptNumber);
+      saveHistory(updatedHistory);
+      renderHistory();
+      updateCustomerHistory();
+      
+      if (currentEditingReceipt && currentEditingReceipt.receiptNumber === receiptNumber) {
+        document.getElementById('acceptForm').reset();
+        document.getElementById('deliveryDays').value = '1';
+        generateInvoice.checked = false;
+        customService1Count.disabled = true;
+        customService2Count.disabled = true;
+        currentEditingReceipt = null;
+        currentReceiptNumber = null;
+        editReceiptBtn.style.display = 'none';
+        deleteReceiptBtn.style.display = 'none';
+        calculateInvoiceTotal();
+      }
+      alert('پذیرش حذف شد.');
+    }
+  };
+  
+  // مقداردهی اولیه
+  updateDeviceView();
+  updateCustomerHistory();
+  renderHistory();
+});
+</script>
+</body>
+</html>
