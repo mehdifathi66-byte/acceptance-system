@@ -6,7 +6,6 @@
 <title>فرم پذیرش - شهر لپ‌تاپ</title>
 <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-  /* همه استایل‌های قبلی رو اینجا قرار بده */
   body { font-family: "Vazirmatn", sans-serif; max-width: 70mm; margin: 0 auto; background: #fff; direction: rtl; padding: 5px; }
   header { text-align: center; padding-bottom: 5px; margin-bottom: 5px; }
   header img { width: 150px; margin-bottom: 8px; }
@@ -239,43 +238,70 @@
 
 <script>
 // تنظیمات GitHub Gist
-const GIST_ID = 'YOUR_GIST_ID_HERE'; // این رو بعداً پر می‌کنی
-const GIST_FILENAME = 'acceptance-data.json';
+const GIST_ID = 'b4ea6022e1bca862d8548315e1c7a182';
+const GIST_URL = `https://api.github.com/gists/${GIST_ID}`;
 
-// شمارنده فیش
 let receiptCounter = 1000;
 let currentEditingReceipt = null;
 let currentReceiptNumber = null;
 let selectedSoftware = [];
 
-// توابع ذخیره‌سازی در localStorage (به عنوان پشتیبان)
-function getReceiptCounter() {
-    return parseInt(localStorage.getItem('receiptCounter') || '1000');
+// توابع برای کار با Gist
+async function loadData() {
+    try {
+        const response = await fetch(GIST_URL);
+        const gist = await response.json();
+        const content = JSON.parse(gist.files['acceptance-data.json'].content);
+        return content;
+    } catch (error) {
+        console.error('Error loading from Gist:', error);
+        // Fallback به localStorage
+        return {
+            receiptCounter: parseInt(localStorage.getItem('receiptCounter') || '1000'),
+            acceptanceHistory: JSON.parse(localStorage.getItem('acceptanceHistory') || '[]')
+        };
+    }
 }
 
-function setReceiptCounter(counter) {
-    localStorage.setItem('receiptCounter', counter.toString());
+async function saveData(data) {
+    try {
+        const response = await fetch(GIST_URL, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                files: {
+                    'acceptance-data.json': {
+                        content: JSON.stringify(data, null, 2)
+                    }
+                }
+            })
+        });
+        
+        if (!response.ok) throw new Error('Failed to save');
+        return true;
+    } catch (error) {
+        console.error('Error saving to Gist:', error);
+        // Fallback به localStorage
+        localStorage.setItem('receiptCounter', data.receiptCounter.toString());
+        localStorage.setItem('acceptanceHistory', JSON.stringify(data.acceptanceHistory));
+        return false;
+    }
 }
 
-function loadHistory() {
-    return JSON.parse(localStorage.getItem('acceptanceHistory') || '[]');
+async function loadHistory() {
+    const data = await loadData();
+    receiptCounter = data.receiptCounter;
+    return data.acceptanceHistory;
 }
 
-function saveHistory(history) {
-    localStorage.setItem('acceptanceHistory', JSON.stringify(history));
-}
-
-// تابع جدید: محاسبه شماره فیش از تاریخچه
-function calculateReceiptCounter(history) {
-    if (history.length === 0) return 1000;
-    
-    // پیدا کردن بزرگترین شماره فیش در تاریخچه
-    const maxReceipt = history.reduce((max, item) => {
-        const receiptNum = parseInt(item.receiptNumber.split('-')[1]);
-        return receiptNum > max ? receiptNum : max;
-    }, 1000);
-    
-    return maxReceipt;
+async function saveHistory(history) {
+    const data = {
+        receiptCounter: receiptCounter,
+        acceptanceHistory: history
+    };
+    await saveData(data);
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -298,21 +324,18 @@ document.addEventListener('DOMContentLoaded', function() {
   const customService1Count = document.getElementById('customService1Count');
   const customService2Count = document.getElementById('customService2Count');
   
-  // مقداردهی اولیه شمارنده از تاریخچه موجود
-  const initialHistory = loadHistory();
-  receiptCounter = calculateReceiptCounter(initialHistory);
-  
   function updateCustomerHistory() {
-    const history = loadHistory();
-    const customers = [...new Set(history.map(item => item.name))];
-    const phones = [...new Set(history.map(item => item.phone))];
-    
-    customerHistory.innerHTML = customers.map(name => `<option value="${name}">`).join('');
-    phoneHistory.innerHTML = phones.map(phone => `<option value="${phone}">`).join('');
+    loadHistory().then(history => {
+      const customers = [...new Set(history.map(item => item.name))];
+      const phones = [...new Set(history.map(item => item.phone))];
+      
+      customerHistory.innerHTML = customers.map(name => `<option value="${name}">`).join('');
+      phoneHistory.innerHTML = phones.map(phone => `<option value="${phone}">`).join('');
+    });
   }
   
-  function renderHistory() {
-    const history = loadHistory();
+  async function renderHistory() {
+    const history = await loadHistory();
     if (history.length === 0) {
       historyList.innerHTML = '<div style="text-align:center; padding:10px; color:#666;">هیچ پذیرشی ثبت نشده</div>';
       return;
@@ -402,8 +425,8 @@ document.addEventListener('DOMContentLoaded', function() {
   
   generateInvoice.addEventListener('change', calculateInvoiceTotal);
   
-  document.getElementById('customerName').addEventListener('input', function() {
-    const history = loadHistory();
+  document.getElementById('customerName').addEventListener('input', async function() {
+    const history = await loadHistory();
     const customer = history.find(item => item.name === this.value);
     if (customer) {
       document.getElementById('customerPhone').value = customer.phone;
@@ -417,12 +440,12 @@ document.addEventListener('DOMContentLoaded', function() {
     return deliveryDate.toLocaleDateString('fa-IR');
   }
   
-  function findExistingReceipt(name, phone) {
-    const history = loadHistory();
+  async function findExistingReceipt(name, phone) {
+    const history = await loadHistory();
     return history.find(item => item.name === name && item.phone === phone);
   }
   
-  savePrintBtn.addEventListener('click', function() {
+  savePrintBtn.addEventListener('click', async function() {
     const name = document.getElementById('customerName').value.trim();
     const phone = document.getElementById('customerPhone').value.trim();
     const device = deviceType.options[deviceType.selectedIndex].text;
@@ -460,13 +483,12 @@ document.addEventListener('DOMContentLoaded', function() {
     let receiptNumber = currentReceiptNumber;
     let isNewReceipt = false;
     
-    const existingReceipt = findExistingReceipt(name, phone);
+    const existingReceipt = await findExistingReceipt(name, phone);
     if (!existingReceipt || !currentReceiptNumber) {
       receiptCounter++;
       receiptNumber = `R-${receiptCounter.toString().padStart(4, '0')}`;
       isNewReceipt = true;
       currentReceiptNumber = receiptNumber;
-      setReceiptCounter(receiptCounter);
     }
     
     const historyItem = {
@@ -485,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
       software: selectedSoftware
     };
     
-    const history = loadHistory();
+    const history = await loadHistory();
     
     if (isNewReceipt) {
       history.push(historyItem);
@@ -498,7 +520,7 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
     
-    saveHistory(history);
+    await saveHistory(history);
     renderHistory();
     updateCustomerHistory();
     
@@ -607,11 +629,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  deleteReceiptBtn.addEventListener('click', function() {
+  deleteReceiptBtn.addEventListener('click', async function() {
     if (currentEditingReceipt && confirm('آیا از حذف این پذیرش مطمئن هستید؟')) {
-      const history = loadHistory();
+      const history = await loadHistory();
       const updatedHistory = history.filter(item => item.receiptNumber !== currentEditingReceipt.receiptNumber);
-      saveHistory(updatedHistory);
+      await saveHistory(updatedHistory);
       renderHistory();
       updateCustomerHistory();
       
@@ -629,8 +651,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
   
-  window.loadReceiptForEdit = function(receiptNumber) {
-    const history = loadHistory();
+  window.loadReceiptForEdit = async function(receiptNumber) {
+    const history = await loadHistory();
     const item = history.find(h => h.receiptNumber === receiptNumber);
     if (item) {
       currentEditingReceipt = item;
@@ -638,11 +660,11 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   };
   
-  window.deleteReceipt = function(receiptNumber) {
+  window.deleteReceipt = async function(receiptNumber) {
     if (confirm('آیا از حذف این پذیرش مطمئن هستید؟')) {
-      const history = loadHistory();
+      const history = await loadHistory();
       const updatedHistory = history.filter(item => item.receiptNumber !== receiptNumber);
-      saveHistory(updatedHistory);
+      await saveHistory(updatedHistory);
       renderHistory();
       updateCustomerHistory();
       
